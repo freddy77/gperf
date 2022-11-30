@@ -62,7 +62,8 @@ SHELL = /bin/sh
 VPATH = $(srcdir)
 
 OBJECTS  = version.$(OBJEXT) positions.$(OBJEXT) options.$(OBJEXT) keyword.$(OBJEXT) keyword-list.$(OBJEXT) \
-           input.$(OBJEXT) bool-array.$(OBJEXT) hash-table.$(OBJEXT) search.$(OBJEXT) output.$(OBJEXT) main.$(OBJEXT)
+           input.$(OBJEXT) bool-array.$(OBJEXT) hash-table.$(OBJEXT) search.$(OBJEXT) main.$(OBJEXT) \
+           output.$(OBJEXT) output-c.$(OBJEXT)
 LIBS     = ../lib/libgp.a @GPERF_LIBM@
 CPPFLAGS = @CPPFLAGS@ -I. -I$(srcdir)/../lib
 
@@ -94,6 +95,7 @@ BOOL_ARRAY_H = bool-array.h bool-array.icc $(OPTIONS_H)
 HASH_TABLE_H = hash-table.h $(KEYWORD_H)
 SEARCH_H = search.h $(KEYWORD_LIST_H) $(POSITIONS_H) $(BOOL_ARRAY_H)
 OUTPUT_H = output.h $(KEYWORD_LIST_H) $(POSITIONS_H)
+OUTPUT_C_H = output-c.h $(OUTPUT_H)
 
 version.$(OBJEXT): version.cc $(VERSION_H)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/version.cc
@@ -113,8 +115,10 @@ hash-table.$(OBJEXT): hash-table.cc $(HASH_TABLE_H) $(OPTIONS_H)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/hash-table.cc
 search.$(OBJEXT): search.cc $(SEARCH_H) $(OPTIONS_H) $(HASH_TABLE_H) $(CONFIG_H)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/search.cc
-output.$(OBJEXT): output.cc $(OUTPUT_H) $(OPTIONS_H) $(VERSION_H)
+output.$(OBJEXT): output.cc $(OUTPUT_H) $(OPTIONS_H) $(VERSION_H) $(OUTPUT_C_H)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/output.cc
+output-c.$(OBJEXT): output-c.cc $(OUTPUT_C_H) $(OPTIONS_H) $(VERSION_H)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/output-c.cc
 main.$(OBJEXT): main.cc $(OPTIONS_H) $(INPUT_H) $(SEARCH_H) $(OUTPUT_H)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $(srcdir)/main.cc
 
@@ -153,6 +157,7 @@ SOURCE_FILES = \
   hash-table.cc $(HASH_TABLE_H) \
   search.cc $(SEARCH_H) \
   output.cc $(OUTPUT_H) \
+  output-c.cc $(OUTPUT_C_H) \
   main.cc
 # List of distributed files imported from other packages.
 IMPORTED_FILES =

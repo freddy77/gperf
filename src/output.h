@@ -27,10 +27,6 @@
 #include "keyword-list.h"
 #include "positions.h"
 
-/* OSF/1 cxx needs these forward declarations. */
-struct Output_Constants;
-struct Output_Compare;
-
 class Output
 {
 public:
@@ -56,57 +52,17 @@ public:
                                 unsigned int alpha_size,
                                 const int *asso_values);
 
+  /* Destructor.  */
+  virtual               ~Output () {};
+
   /* Generates the hash function and the key word recognizer function.  */
-  void                  output ();
+  virtual void /*abstract*/
+                        output () = 0;
 
-private:
-
-  /* Computes the minimum and maximum hash values, and stores them
-     in _min_hash_value and _max_hash_value.  */
-  void                  compute_min_max ();
+protected:
 
   /* Returns the number of different hash values.  */
   int                   num_hash_values () const;
-
-  /* Outputs the maximum and minimum hash values etc.  */
-  void                  output_constants (struct Output_Constants&) const;
-
-  /* Generates a C expression for an asso_values[] index.  */
-  void                  output_asso_values_index (int pos) const;
-
-  /* Generates a C expression for an asso_values[] reference.  */
-  void                  output_asso_values_ref (int pos) const;
-
-  /* Generates C code for the hash function that returns the
-     proper encoding for each keyword.  */
-  void                  output_hash_function () const;
-
-  /* Prints out a table of keyword lengths, for use with the
-     comparison code in generated function 'in_word_set'.  */
-  void                  output_keylength_table () const;
-
-  /* Prints out the string pool, containing the strings of the keyword table.
-   */
-  void                  output_string_pool () const;
-
-  /* Prints out the array containing the keywords for the hash function.  */
-  void                  output_keyword_table () const;
-
-  /* Generates the large, sparse table that maps hash values into
-     the smaller, contiguous range of the keyword table.  */
-  void                  output_lookup_array () const;
-
-  /* Generate all pools needed for the lookup function.  */
-  void                  output_lookup_pools () const;
-
-  /* Generate all the tables needed for the lookup function.  */
-  void                  output_lookup_tables () const;
-
-  /* Generates C code to perform the keyword lookup.  */
-  void                  output_lookup_function_body (const struct Output_Compare&) const;
-
-  /* Generates C code for the lookup function.  */
-  void                  output_lookup_function () const;
 
   /* Linked list of keywords.  */
   KeywordExt_List *     _head;
@@ -118,8 +74,6 @@ private:
   const char *          _return_type;
   /* Shorthand for user-defined struct tag type. */
   const char *          _struct_tag;
-  /* Element type of keyword array.  */
-  const char *          _wordlist_eltype;
   /* The C code from the declarations section.  */
   const char * const    _verbatim_declarations;
   const char * const    _verbatim_declarations_end;
@@ -153,6 +107,33 @@ private:
   unsigned int const    _alpha_size;
   /* Value associated with each character. */
   const int * const     _asso_values;
+
+private:
+
+  /* Computes the minimum and maximum hash values, and stores them
+     in _min_hash_value and _max_hash_value.  */
+  void                  compute_min_max ();
 };
+
+Output * create_output (KeywordExt_List *head,
+                        const char *struct_decl,
+                        unsigned int struct_decl_lineno,
+                        const char *return_type,
+                        const char *struct_tag,
+                        const char *verbatim_declarations,
+                        const char *verbatim_declarations_end,
+                        unsigned int verbatim_declarations_lineno,
+                        const char *verbatim_code,
+                        const char *verbatim_code_end,
+                        unsigned int verbatim_code_lineno,
+                        bool charset_dependent,
+                        int total_keys,
+                        int max_key_len, int min_key_len,
+                        bool hash_includes_len,
+                        const Positions& positions,
+                        const unsigned int *alpha_inc,
+                        int total_duplicates,
+                        unsigned int alpha_size,
+                        const int *asso_values);
 
 #endif
