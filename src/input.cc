@@ -630,8 +630,7 @@ Input::read_input ()
               memcpy (new_struct_decl, struct_decl, old_len);
             memcpy (new_struct_decl + old_len, line, line_len);
             new_struct_decl[old_len + line_len] = '\0';
-            if (struct_decl)
-              delete[] struct_decl;
+            delete[] struct_decl;
             struct_decl = new_struct_decl;
             /* Append the lineno to struct_decl_linenos.  */
             unsigned int *new_struct_decl_linenos =
@@ -640,8 +639,7 @@ Input::read_input ()
               memcpy (new_struct_decl_linenos, struct_decl_linenos,
                       struct_decl_linecount * sizeof (unsigned int));
             new_struct_decl_linenos[struct_decl_linecount] = lineno;
-            if (struct_decl_linenos)
-              delete[] struct_decl_linenos;
+            delete[] struct_decl_linenos;
             struct_decl_linenos = new_struct_decl_linenos;
             /* Increment struct_decl_linecount.  */
             struct_decl_linecount++;
@@ -771,8 +769,7 @@ Input::read_input ()
       }
 
     delete[] struct_decl;
-    if (struct_decl_linenos)
-      delete[] struct_decl_linenos;
+    delete[] struct_decl_linenos;
   }
 
   /* Parse the keywords section.  */
