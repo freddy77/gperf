@@ -225,6 +225,15 @@ is_define_declaration (const char *line, const char *line_end,
   return true;
 }
 
+static char*
+strip_trailing_spaces (const char *start, const char *end)
+{
+  for (; end > start; --end)
+    if (end[-1] != '\n' && end[-1] != ' ' && end[-1] != '\t')
+      break;
+  return const_cast<char*> (end);
+}
+
 /* Reads the entire input file.  */
 void
 Input::read_input ()
@@ -715,11 +724,8 @@ Input::read_input ()
               _struct_decl_lineno = *l;
             }
             /* Drop trailing whitespace.  */
-            for (char *p = struct_decl + strlen (struct_decl); p > struct_decl;)
-              if (p[-1] == '\n' || p[-1] == ' ' || p[-1] == '\t')
-                *--p = '\0';
-              else
-                break;
+            char *p = strip_trailing_spaces (struct_decl, struct_decl + strlen (struct_decl));
+            *p = '\0';
           }
         if (struct_decl == NULL || struct_decl[0] == '\0')
           {
@@ -747,11 +753,7 @@ Input::read_input ()
         const char *p;
         for (p = struct_decl; *p && *p != '{' && *p != ';' && *p != '\n'; p++)
           ;
-        for (; p > struct_decl;)
-          if (p[-1] == '\n' || p[-1] == ' ' || p[-1] == '\t')
-            --p;
-          else
-            break;
+        p = strip_trailing_spaces (struct_decl, p);
         size_t struct_tag_length = p - struct_decl;
         char *struct_tag = new char[struct_tag_length + 1];
         memcpy (struct_tag, struct_decl, struct_tag_length);
