@@ -768,6 +768,7 @@ Input::read_input ()
         _return_type = return_type;
       }
 
+    delete[] struct_decl;
     if (struct_decl_linenos)
       delete[] struct_decl_linenos;
   }
